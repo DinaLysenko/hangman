@@ -10,50 +10,59 @@
 <body>
     <script>
         let words = ["кошка", "машина", "ребенок", "весна", "солнце", "шляпа"]
-        let word = words[Math.floor(Math.random() * words.length)]
-        let answerArray = []
-        for (let i = 0; i < word.length; i++) {
-            answerArray[i] = '_'
+        function pickWord(array) {
+            return array[Math.floor(Math.random() * array.length)]
         }
+        function setupAnswerArray(value) {
+            let arr = []
+            for (let i = 0; i < value.length; i++) {
+                arr[i] = '_'
+            }
+            return arr
+        }
+        function showPlayerProgress(arr) {
+            alert(arr.join(' '))
+        }
+        function getGuess() {
+           return prompt('Угадайте слово или нажмите Отмена для выхода из игры')
+        }
+        let updateGameState = function (guess, word, answerArray) {
+            let appearances = 0;
+            for (let j = 0; j < word.length; j++) {
+                if (word[j] === guess) {
+                    answerArray[j] = guess;
+                    appearances++;
+                }
+            }
+
+            return appearances;
+        };
+
+        let showAnswerAndCongratulatePlayer = function (answerArray) {
+            showPlayerProgress(answerArray);
+            alert("Good job! The answer was " + answerArray.join(""));
+        };
+        let word = pickWord(words)
+        let answerArray = setupAnswerArray(word)
+
         let remainingLetters = word.length
-        let trying = 10
 
-        while (remainingLetters > 0 && trying > 0) {
-            alert(answerArray.join(' '))
-            let guess = prompt('Угадайте слово или нажмите Отмена для выхода из игры')
-            guess = guess.toLowerCase();
+
+        while (remainingLetters > 0) {
+            showPlayerProgress(answerArray); 
+            let guess = getGuess();
             if (guess === null) {
-                break
+                break;
             } else if (guess.length !== 1) {
-                alert('Пожалуйста введите только одну букву')
-            } else if (answerArray.includes(guess)) {
-                alert('Вы уже угадали эту букву! Попробуйте другую.');
+                alert("Please enter a single letter.");
+            } else {
+                let correctGuesses = updateGameState(guess, word, answerArray);
+                remainingLetters -= correctGuesses;
             }
-            else {
-                let correctGuess = false;
-                for (let j = 0; j < word.length; j++) {
-                    if (word[j] === guess && answerArray[j] === '_') {
-                        answerArray[j] = guess
-                        remainingLetters--
-                        correctGuess = true;
-                    }
-                }
-                if (!correctGuess) {
-                    trying--;
-                    alert('Неверно! Минус одна попытка.');
-                } else {
-                    alert('Отлично! Есть такая буква.');
-                }
-            }
+        }
 
-        }
-        alert(answerArray.join(' '))
-        if (remainingLetters === 0) {
-            alert('Поздравляем! Вы победили!');
-        } else {
-            alert('Попытки закончились. Вы проиграли.');
-        }
-        alert('Было загадано слово: ' + word);
+        showAnswerAndCongratulatePlayer(answerArray);
+
 
     </script>
 </body>
